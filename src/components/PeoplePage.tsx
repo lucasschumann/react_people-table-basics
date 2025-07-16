@@ -2,31 +2,19 @@ import { useEffect, useState } from 'react';
 import { Person } from '../types';
 import { Loader } from './Loader';
 import { PeopleTable } from './PeopleTable';
+import { getPeople } from '../api';
 
 export const PeoplePage = () => {
   const [people, setPeople] = useState<Person[] | null>(null);
   const [loading, setLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-
-    async function getPeople() {
-      try {
-        const response = await fetch(
-          'https://mate-academy.github.io/react_people-table/api/people.json',
-        );
-        const json = await response.json();
-
-        setPeople(json);
-      } catch (e) {
-        setIsError(true);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    getPeople();
+    getPeople()
+      .then(setPeople)
+      .catch(() => setHasError(true))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -38,17 +26,17 @@ export const PeoplePage = () => {
           <div className="box table-container">
             {loading && <Loader />}
 
-            {isError && (
+            {hasError && !loading && (
               <p data-cy="peopleLoadingError" className="has-text-danger">
                 Something went wrong
               </p>
             )}
 
-            {people && people.length === 0 && (
+            {people?.length === 0 && (
               <p data-cy="noPeopleMessage">There are no people on the server</p>
             )}
 
-            {people && <PeopleTable people={people} />}
+            {people && people.length > 0 && <PeopleTable people={people} />}
           </div>
         </div>
       </div>

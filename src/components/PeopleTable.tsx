@@ -1,5 +1,6 @@
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Person } from '../types';
+import { PersonLink } from './PersonLink';
 
 type Props = {
   people: Person[];
@@ -43,12 +44,7 @@ export const PeopleTable = ({ people }: Props) => {
               key={person.slug}
             >
               <td>
-                <Link
-                  to={`/people/${person.slug}`}
-                  className={person.sex === 'f' ? 'has-text-danger' : ''}
-                >
-                  {person.name}
-                </Link>
+                <PersonLink person={person} />
               </td>
 
               <td>{person.sex}</td>
@@ -56,21 +52,14 @@ export const PeopleTable = ({ people }: Props) => {
               <td>{person.died}</td>
               <td>
                 {motherFinder(person) ? (
-                  <Link
-                    to={`/people/${motherFinder(person)?.slug}`}
-                    className="has-text-danger"
-                  >
-                    {person.motherName}
-                  </Link>
+                  <PersonLink person={motherFinder(person)!} />
                 ) : (
                   person.motherName || '-'
                 )}
               </td>
               <td>
                 {fatherFinder(person) ? (
-                  <Link to={`/people/${fatherFinder(person)?.slug}`}>
-                    {person.fatherName}
-                  </Link>
+                  <PersonLink person={fatherFinder(person)!} />
                 ) : (
                   person.fatherName || '-'
                 )}
